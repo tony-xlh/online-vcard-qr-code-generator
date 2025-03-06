@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VCard QR Code Generator</title>
+  <style>
+    .form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #generateButton {
+      width: 150px;
+    }
+  </style>
+  <script type="text/javascript" src="qrcode.js"></script>
+  <script type="module">
+    import VCard from 'https://cdn.skypack.dev/vcard-creator'
+    window.VCard = VCard;
+  </script>
+</head>
+<html>
+<body>
+  <div id="app">
+    <h2>VCard QR Code Generator</h2>
+    <div class="form">
+      <label>
+        First name:
+        <input type="text" id="firstName"/>
+      </label>
+      <label>
+        Last name:
+        <input type="text" id="lastName"/>
+      </label>
+      <label>
+        Phone:
+        <input type="text" id="phone"/>
+      </label>
+      <label>
+        Email:
+        <input type="text" id="email"/>
+      </label>
+      <label>
+        Company:
+        <input type="text" id="company"/>
+      </label>
+      <label>
+        Job title:
+        <input type="text" id="jobTitle"/>
+      </label>
+      <label>
+        Website:
+        <input type="text" id="website"/>
+      </label>
+      <button id="generateButton">Generate</button>
+    </div>
+    <div id="placeHolder"></div>
+  </div>
+  <script>
+  document.getElementById("generateButton").addEventListener("click",generateQRCode)
+
+  function generateQRCode(){
+    const card = new VCard()
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const phone = document.getElementById("phone").value;
+    const company = document.getElementById("company").value;
+    const jobTitle = document.getElementById("jobTitle").value;
+    const website = document.getElementById("website").value;
+    const email = document.getElementById("email").value;
+    card.addName(lastName, firstName, "", "", "")
+      .addCompany(company)
+      .addJobtitle(jobTitle)
+      .addEmail(email)
+      .addPhoneNumber(phone, 'WORK')
+      .addURL(website)
+    const vcf = card.toString();
+    console.log(vcf);
+    var typeNumber = 0;
+    var errorCorrectionLevel = 'L';
+    var qr = qrcode(typeNumber, errorCorrectionLevel);
+    qr.addData(vcf);
+    qr.make();
+    var placeHolder = document.getElementById('placeHolder');
+    placeHolder.innerHTML = qr.createSvgTag();
+  }
+  </script>
+</body>
+</html>
