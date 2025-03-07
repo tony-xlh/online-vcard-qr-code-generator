@@ -9,7 +9,8 @@
       flex-direction: column;
     }
 
-    #generateButton {
+    #generateButton,#generateWithExistingButton {
+      margin-bottom: 10px;
       width: 150px;
     }
   </style>
@@ -53,12 +54,33 @@
         <input type="text" id="website"/>
       </label>
       <button id="generateButton">Generate</button>
+      <button id="generateWithExistingButton">Generate with an existing vcf file</button>
+      <input style="display:none;" type="file" id="file" onchange="loadFromFile();" accept=".vcf"/>
     </div>
     <div id="placeHolder"></div>
   </div>
   <script>
-  document.getElementById("generateButton").addEventListener("click",generateQRCode)
+  document.getElementById("generateButton").addEventListener("click",generateQRCode);
+  document.getElementById("generateWithExistingButton").addEventListener("click",function(){
+    document.getElementById("file").click();
+  });
 
+  function loadFromFile(){
+    let fileInput = document.getElementById("file");
+    let files = fileInput.files;
+    if (files.length == 0) {
+      return;
+    }
+    let file = files[0];
+    fileReader = new FileReader();
+    fileReader.onload = function(e){
+      generateQR(e.target.result);
+    };
+    fileReader.onerror = function () {
+      console.warn('oops, something went wrong.');
+    };
+    fileReader.readAsText(file);
+  }
   function generateQRCode(){
     const card = new VCard()
     const firstName = document.getElementById("firstName").value;
@@ -76,10 +98,14 @@
       .addURL(website)
     const vcf = card.toString();
     console.log(vcf);
+    generateQR(vcf);
+  }
+
+  function generateQR(content){
     var typeNumber = 0;
     var errorCorrectionLevel = 'L';
     var qr = qrcode(typeNumber, errorCorrectionLevel);
-    qr.addData(vcf);
+    qr.addData(content);
     qr.make();
     var placeHolder = document.getElementById('placeHolder');
     placeHolder.innerHTML = qr.createSvgTag();
