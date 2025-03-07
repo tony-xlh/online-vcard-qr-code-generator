@@ -102,13 +102,17 @@
   }
 
   function generateQR(content){
-    var typeNumber = 0;
-    var errorCorrectionLevel = 'L';
-    var qr = qrcode(typeNumber, errorCorrectionLevel);
-    qr.addData(content);
-    qr.make();
-    var placeHolder = document.getElementById('placeHolder');
-    placeHolder.innerHTML = qr.createSvgTag();
+    try {
+      var typeNumber = 0;
+      var errorCorrectionLevel = 'L';
+      var qr = qrcode(typeNumber, errorCorrectionLevel);
+      qr.addData(content);
+      qr.make();
+      var placeHolder = document.getElementById('placeHolder');
+      placeHolder.innerHTML = qr.createSvgTag();  
+    } catch (error) {
+      alert(error);
+    }
   }
   </script>
 </body>
